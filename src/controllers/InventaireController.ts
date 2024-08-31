@@ -16,25 +16,26 @@ class InventaireController {
                 this.inventaireService.save(inventaire);
                 resolve(new Response(inventaire, 201, "Créé avec succès"));
             } catch (error) {
-                reject(new Response(null, 500, "Erreur lors de la soumission"));
+                if (error instanceof Error) {
+                    console.log(error.message);
+                    reject(new Response(null, 500, "Erreur lors de la soumission"));
+                }
             }
         });
     }
 
     public updateInventory(id: number, inventaire: InventaireImpl): Promise<Response<InventaireImpl>> {
         return Promise((resolve, reject) => {
-            try {
-                this.inventaireService.update(id, inventaire);
-                resolve(new Response(inventaire, 200, "Modifié avec succès"));
-            } catch (error) {
-                if (error instanceof NotFoundException){
-                    reject(new Response(null, error.status, error.message));
-                }
+            let update = this.inventaireService.update(id, inventaire);
+            resolve(new Response(inventaire, 200, "Modifié avec succès"));
+            if (update === null) {
+                const error = new NotFoundException("Non trouvé");
+                reject(new Response(null, error.status, error.message));
             }
         });
     }
 
-    public getAllInventories() : Promise<Response<Array<InventaireImpl>>> {
+    public getAllInventories(): Promise<Response<Array<InventaireImpl>>> {
         return Promise((resolve, reject) => {
             try {
                 let inventaires = this.inventaireService.findAll()
@@ -45,15 +46,13 @@ class InventaireController {
         });
     }
 
-    public getInventoryById(id: number) : Promise<Response<Array<InventaireImpl>>> {
+    public getInventoryById(id: number): Promise<Response<Array<InventaireImpl>>> {
         return Promise((resolve, reject) => {
-            try {
-                let inventaire = this.inventaireService.findById(id);
-                resolve(new Response(inventaire, 200, "Modifié avec succès"));
-            } catch (error) {
-                if (error instanceof NotFoundException){
-                    reject(new Response(null, error.status, error.message));
-                }
+            let inventaire = this.inventaireService.findById(id);
+            resolve(new Response(inventaire, 200, "Modifié avec succès"));
+            if (inventaire === null) {
+                const error = new NotFoundException("Non trouvé");
+                reject(new Response(null, error.status, error.message));
             }
         });
     }
