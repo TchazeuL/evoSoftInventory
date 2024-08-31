@@ -1,7 +1,10 @@
+import ProduitImpl from "./Produit";
+
 interface Magasin {
     id: string,
     nom: string,
     adresse: string,
+    produits: Array<ProduitImpl>
 }
 
 class MagasinImpl implements Magasin {
@@ -12,10 +15,13 @@ class MagasinImpl implements Magasin {
 
     private _adresse: string;
 
-    public constructor(id: string, nom: string, adresse: string) {
+    private _produits: Array<ProduitImpl>
+
+    public constructor(id: string, nom: string, adresse: string, produits: Array<ProduitImpl>) {
         this._id = id;
         this._nom = nom;
         this._adresse = adresse;
+        this._produits = produits
     }
 
     get id(): string {
@@ -38,8 +44,12 @@ class MagasinImpl implements Magasin {
         return this._adresse;
     }
 
-    public set adresse(adresse: string) {
+    set adresse(adresse: string) {
         this._adresse = adresse;
+    }
+
+    get produits(): Array<ProduitImpl>{
+        return this._produits;
     }
 
     public toJson(): any {
@@ -51,7 +61,15 @@ class MagasinImpl implements Magasin {
     }
 
     public fromJson(json: any) : MagasinImpl {
-        return new MagasinImpl(json["id"], json["nom"], json["adresse"]);
+        return new MagasinImpl(json["id"], json["nom"], json["adresse"], this.getProduits(json["produits"]));
+    }
+
+    public getProduits(data: Array<any>) : Array<ProduitImpl>{
+        let produits = [];
+        for(var item in data){
+            produits.push(new ProduitImpl("", "", 0).fromJson(item))
+        }
+        return produits;
     }
 }
 
