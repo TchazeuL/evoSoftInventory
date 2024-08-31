@@ -26,26 +26,30 @@ class InventaireService implements InventaireRepository {
         return [];
     }
 
-    public findById(id: number): InventaireImpl {
+    public findById(id: number): InventaireImpl | null {
         let list = localStorage.getItem("inventaires");
-        var inventaire;
+        var inventaire = null ;
         if (list != null) {
             let inventaires = JSON.parse(list) as Array<any>;
-            inventaire = inventaires.find((item) => item.id === id);
-            if (inventaire == null) {
-                throw new NotFoundException("Non trouvé");
+            let index = inventaires.map((item) => item.id).indexOf(id);
+            if(index != 1){
+                inventaire = inventaires.find((item) => item.id === id);
+                return inventaire;
             }
         }
         return inventaire;
     }
 
-    public update(id: number, inventaire: InventaireImpl): InventaireImpl {
+    public update(id: number, inventaire: InventaireImpl): InventaireImpl | null {
         let item = this.findById(id);
-        item.date = inventaire.date;
-        item.produitId = inventaire.produitId;
-        item.stock = inventaire.stock;
-        this.save(item);
-        return item;
+        if (item != null) {
+            item.date = inventaire.date;
+            item.produitId = inventaire.produitId;
+            item.stock = inventaire.stock;
+            this.save(item);
+            return item;
+        }
+        return null
     }
 }
 

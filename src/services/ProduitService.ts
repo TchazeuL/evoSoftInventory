@@ -6,10 +6,14 @@ class ProduitService implements ProduitRepository {
 
     public constructor(){}
 
-    public findById(id: string): ProduitImpl {
+    public findById(id: string): ProduitImpl | null {
         let produit = new ProduitImpl("", "", 0);
         const list = produits;
-        return produit.fromJson(list.find((item) => item.id === id));
+        let index = list.map((item) => item.id).indexOf(id);
+        if (index != -1){
+            return produit.fromJson(list.find((item) => item.id === id));
+        }
+        return null;
     }
 
 }

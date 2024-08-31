@@ -6,9 +6,9 @@ interface InventaireRepository {
 
     findAll() : Array<InventaireImpl> ; 
 
-    findById(id: number): InventaireImpl ;
+    findById(id: number): InventaireImpl | null;
 
-    update(id: number, inventaire: InventaireImpl) : InventaireImpl;
+    update(id: number, inventaire: InventaireImpl) : InventaireImpl | null;
 
 }
 
