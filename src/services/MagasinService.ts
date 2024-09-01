@@ -16,6 +16,11 @@ class MagasinService implements MagasinRepository {
         }
         return null;
     }
+
+    public findAll(): Array<MagasinImpl> {
+        let mags = magasins.map((item) => new MagasinImpl("", "", "", []).fromJson(item));
+        return mags;
+    }
 }
 
 export default MagasinService;

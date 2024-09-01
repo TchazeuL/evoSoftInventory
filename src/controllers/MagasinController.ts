@@ -17,10 +17,17 @@ class MagasinController {
                 resolve(new Response(magasin, 200, "Succès"))
             } catch (error) {
                 if (error instanceof NotFoundException) {
-                reject(new Response(null, error.status, error.message))
+                    reject(new Response(null, error.status, error.message))
                 }
             }
         });
+    }
+
+    public getAllMagasins(): Promise<Response<Array<MagasinImpl>>> {
+        return Promise((resolve, reject) => {
+            let magasins = this.magasinService.findAll();
+            resolve(new Response(magasins, 200, "Succès"))
+        })
     }
 }
 
