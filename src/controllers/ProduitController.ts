@@ -21,6 +21,13 @@ class ProduitController {
             }
         });
     }
+
+    public getAllProducts(): Promise<Response<Array<ProduitImpl>>> {
+        return Promise((resolve, reject) => {
+            let produits = this.produitService.findAll();
+            resolve(new Response(produits, 200, "Succès"))
+        });
+    }
 }
 
 export default ProduitController;
