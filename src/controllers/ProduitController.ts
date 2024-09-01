@@ -28,6 +28,19 @@ class ProduitController {
             resolve(new Response(produits, 200, "Succès"))
         });
     }
+
+    public getProductByName(nom: string): Promise<Response<ProduitImpl>> {
+        return Promise((resolve, reject) => {
+            let produit = this.produitService.findByName(nom);
+            if (produit == null) {
+                let error = new NotFoundException("Non trouvé")
+                reject(new Response(null, error.status, error.message))
+            } else {
+                resolve(new Response(produit, 200, "Succès"))
+            }
+        });
+    }
+
 }
 
 export default ProduitController;

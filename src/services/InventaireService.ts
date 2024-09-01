@@ -9,6 +9,9 @@ class InventaireService implements InventaireRepository {
     public constructor() { }
 
     public save(inventaire: InventaireImpl): void {
+        if (localStorage.getItem("inventaires") == null) {
+            localStorage.setItem("inventaires", JSON.stringify([]));
+        }
         let list = localStorage.getItem("inventaires");
         if (list != null) {
             let inventaires = JSON.parse(list);
@@ -28,11 +31,11 @@ class InventaireService implements InventaireRepository {
 
     public findById(id: number): InventaireImpl | null {
         let list = localStorage.getItem("inventaires");
-        var inventaire = null ;
+        var inventaire = null;
         if (list != null) {
             let inventaires = JSON.parse(list) as Array<any>;
             let index = inventaires.map((item) => item.id).indexOf(id);
-            if(index != 1){
+            if (index != 1) {
                 inventaire = inventaires.find((item) => item.id === id);
                 return inventaire;
             }

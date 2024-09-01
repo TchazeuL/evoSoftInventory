@@ -21,6 +21,16 @@ class ProduitService implements ProduitRepository {
         return products;
     }
 
+    public findByName(nom: string): ProduitImpl | null {
+        let produit = new ProduitImpl("", "", 0);
+        const list = produits;
+        let index = list.map((item) => item.nom).indexOf(nom);
+        if (index !== -1){
+            return produit.fromJson(list.find((item) => item.nom === nom));
+        }
+        return null;
+    }
+
 }
 
 export default ProduitService;
