@@ -6,17 +6,31 @@ interface Inventaire {
 
 class InventaireImpl implements Inventaire {
 
+    // l'Id a été ajouté pour l'indexage
+
+    private _id: number;
+
     private _date: string;
 
     private _produitId: string;
 
-    private _stock: Record<string, number>;
+    private _stock: Record<string, any>;
 
-    public constructor(date: string, produitId: string, stock: Record<string, number>) {
+    public constructor(id: number, date: string, produitId: string, stock: Record<string, any>) {
+        this._id = id;
         this._date = date;
         this._produitId = produitId;
         this._stock = stock;
     }
+
+    get id(): number {
+        return this._id;
+    }
+
+    set id(id: number) {
+        this._id = id;
+    }
+
 
     get date(): string {
         return this._date;
@@ -51,7 +65,7 @@ class InventaireImpl implements Inventaire {
     }
 
     public fromJson(json: any): InventaireImpl {
-        return new InventaireImpl(json["id"], json["produitId"], json["stock"]);
+        return new InventaireImpl(json["id"], json["date"], json["produitId"], json["stock"]);
     }
 
 }
