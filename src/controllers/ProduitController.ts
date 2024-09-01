@@ -14,7 +14,8 @@ class ProduitController {
         return Promise((resolve, reject) => {
             let produit = this.produitService.findById(id);
             if (produit == null) {
-                let error = new NotFoundException("Non trouvé")
+                let error  = new NotFoundException("Produit " + "“" + id 
+                + "“" + " non trouvé")
                 reject(new Response(null, error.status, error.message))
             } else {
                 resolve(new Response(produit, 200, "Succès"))
@@ -33,7 +34,8 @@ class ProduitController {
         return Promise((resolve, reject) => {
             let produit = this.produitService.findByName(nom);
             if (produit == null) {
-                let error = new NotFoundException("Non trouvé")
+                let error = new NotFoundException("Produit " + "“" + nom 
+                + "“" + " non trouvé")
                 reject(new Response(null, error.status, error.message))
             } else {
                 resolve(new Response(produit, 200, "Succès"))

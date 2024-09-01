@@ -29,7 +29,7 @@ class InventaireController {
             let update = this.inventaireService.update(id, inventaire);
             resolve(new Response(inventaire, 200, "Modifié avec succès"));
             if (update === null) {
-                const error = new NotFoundException("Non trouvé");
+                const error = new NotFoundException("Inventaire non trouvé");
                 reject(new Response(null, error.status, error.message));
             }
         });

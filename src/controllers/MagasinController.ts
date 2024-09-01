@@ -12,13 +12,13 @@ class MagasinController {
 
     public getMagasinById(id: string): Promise<Response<MagasinImpl>> {
         return Promise((resolve, reject) => {
-            try {
-                let magasin = this.magasinService.findById(id);
+            let magasin = this.magasinService.findById(id);
+            if (magasin == null) {
+                let error = new NotFoundException("Magasin " + "“" + id 
+                + "“" + " non trouvé")
+                reject(new Response(null, error.status, error.message))
+            } else {
                 resolve(new Response(magasin, 200, "Succès"))
-            } catch (error) {
-                if (error instanceof NotFoundException) {
-                    reject(new Response(null, error.status, error.message))
-                }
             }
         });
     }
@@ -32,12 +32,13 @@ class MagasinController {
 
     public getMagasinByName(nom: string): Promise<Response<MagasinImpl>> {
         return Promise((resolve, reject) => {
-            let produit = this.magasinService.findByName(nom);
-            if (produit == null) {
-                let error = new NotFoundException("Non trouvé")
+            let magasin = this.magasinService.findByName(nom);
+            if (magasin == null) {
+                let error = new NotFoundException("Magasin " + "“" + nom 
+                + "“" + " non trouvé")
                 reject(new Response(null, error.status, error.message))
             } else {
-                resolve(new Response(produit, 200, "Succès"))
+                resolve(new Response(magasin, 200, "Succès"))
             }
         });
     }
