@@ -11,6 +11,7 @@ function TableInventory() {
 
     const [rows, setRows] = useState<any[]>([]);
     const [columns, setColumns] = useState<string[]>([]);
+    const titleId = "Numéro";
     const [loading, setLoading] = useState(false);
     const notificationContext = useContext(NotificationContext);
 
@@ -34,16 +35,18 @@ function TableInventory() {
                 const stock = item.stock[magasinId]
                 const produit = await produitApi.getProductById(produitId);
                 const magasin = await magasinApi.getMagasinById(magasinId);
-                return {
-                    "#": item.id,
+                const result = {
+                    "Numéro": item.id,
                     "date": date,
                     "magasin": magasin.data.nom,
                     "produit": produit.data.nom,
                     "stock": stock,
                     "modifier": "modifier"
                 }
+                result[titleId] = item.id;
+                return result;
             }));
-            setColumns(["#", "date", "magasin", "produit", "stock", "modifier"]);
+            setColumns([titleId, "date", "magasin", "produit", "stock", "modifier"]);
             setRows(items);
             setLoading(false);
             if (items.length > 0) {
@@ -61,7 +64,7 @@ function TableInventory() {
     }
 
     return (
-        <Table rows={rows} columns={columns} />
+        <Table rows={rows} columns={columns} titleId={titleId}/>
     )
 }
 

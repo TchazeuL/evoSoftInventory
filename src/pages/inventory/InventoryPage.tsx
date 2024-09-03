@@ -4,6 +4,7 @@ import Notify from "../../components/Notify";
 import { NotificationProvider } from "../../contexts/Notification";
 import ModalInventory from "./widget/modal";
 import TableInventory from "./widget/table";
+import { UpdatingProvider } from "../../contexts/Updating";
 
 function InventoryPage() {
     return (
@@ -16,18 +17,14 @@ function InventoryPage() {
                 }}>
                     <Notify />
                 </div>
-                <div className="col-12">
                     <div className="container-fluid">
-                            <div className="inventory col-8 offset-2">
-                                <div className="offset-10 mb-2">
-                                    <div className="row g-1">
-                                        <ModalInventory />
-                                    </div>
-                                </div>
+                        <UpdatingProvider>
+                            <div className="inventory col-10 offset-1">
+                                <ModalInventory />
                                 <TableInventory />
                             </div>
+                        </UpdatingProvider>
                     </div>
-                </div>
             </div>
         </NotificationProvider>
     )
