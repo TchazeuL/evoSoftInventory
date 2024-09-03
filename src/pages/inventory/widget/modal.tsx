@@ -56,8 +56,11 @@ function ModalInventory(): any {
         if (data.showModal) {
             show()
             setForm((value) => ({
-                ...value, date: data.row.date, magasin: { value: data.row.magasin, options: value.magasin.options }, produit: { value: data.row.produit, options: value.produit.options }, stock: data.row.stock
+                ...value, date: date, magasin: { value: data.row.magasin, options: value.magasin.options }, produit: { value: data.row.produit, options: value.produit.options }, stock: data.row.stock
             }))
+        } 
+        if (data.action === "create"){
+            show();
         }
     }, [data])
 
@@ -123,7 +126,7 @@ function ModalInventory(): any {
         let validation = validator();
         setErrors(validation);
         if (Object.keys(validation).length === 0) {
-            let inventory = new InventaireImpl(data.row.id, data.row.date, "", {})
+            let inventory = new InventaireImpl(data.row.id, date, "", {})
             try {
                 const produitResponse = await produitApi.getProductByName(form.produit.value);
                 const magasinResponse = await magasinApi.getMagasinByName(form.magasin.value);
@@ -197,18 +200,12 @@ function ModalInventory(): any {
 
     return (
         <div>
-            <div className="d-flex mb-3 col-12">
-                <div className="col-6">
-                    <button className="btn btn-primary col-4" onClick={show}>Ajouter</button>
-                    <button className="btn btn-outline-primary ms-2 col-4" onClick={() => window.location.reload()}>Actualiser</button>
-                </div>
-                <div className="col-6">
-                    <button className="btn btn-primary offset-6 col-6">Exporter en csv</button>
-                </div>
+            <div className="mb-4 text-light text-center">
+                <h3><strong>Table des inventaires</strong></h3>
             </div>
             <Modal show={showModal} size="lg" backdrop="static" onHide={hide} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{data.action === "update" ? "Création d'un inventaire" : "Modification d'un inventaire"}</Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">{data.action !== "update" ? "Création d'un inventaire" : "Modification d'un inventaire"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form>
@@ -235,9 +232,12 @@ function ModalInventory(): any {
                                 {errors.stockError && <div className="text-danger">{errors.stockError}</div>}
                             </div>
                         </div>
-                        <div className="col-6 offset-5 mt-4">
-                            <button className="btn btn-success" type="submit" onClick={data.action === "update" ? updateInventaire : storeInventaire} style={{ width: 130 }}>{
-                                loading ? <Loader /> : "Enrégistrer"
+                        <div className="col-12 mt-4 text-center">
+                            <button className="btn btn-outline-danger" type="button" onClick={hide} style={{ width: 130 }}>{
+                                 "Annuler"
+                            }</button>
+                            <button className="btn btn-success ms-2" type="submit" onClick={data.action === "update" ? updateInventaire : storeInventaire} style={{ width: 130 }}>{
+                                loading ? <Loader color="light" /> : "Enrégistrer"
                             }</button>
                         </div>
                     </form>
