@@ -6,7 +6,7 @@ import ModalInventory from "./widget/modal";
 import TableInventory from "./widget/table";
 import { UpdatingProvider } from "../../contexts/Updating";
 
-function InventoryPage() {
+function InventoryPage() : any {
     return (
         <NotificationProvider>
             <div>
@@ -17,14 +17,14 @@ function InventoryPage() {
                 }}>
                     <Notify />
                 </div>
-                    <div className="container-fluid">
-                        <UpdatingProvider>
-                            <div className="inventory col-10 offset-1">
-                                <ModalInventory />
-                                <TableInventory />
-                            </div>
-                        </UpdatingProvider>
-                    </div>
+                <div className="container-fluid">
+                    <UpdatingProvider>
+                        <div className="inventory col-10 offset-1">
+                            <ModalInventory />
+                            <TableInventory />
+                        </div>
+                    </UpdatingProvider>
+                </div>
             </div>
         </NotificationProvider>
     )

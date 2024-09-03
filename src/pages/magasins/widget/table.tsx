@@ -20,7 +20,7 @@ function TableMagasin() : any {
             const magasins = data.map((value) => {
                 const magasin = value.toJson();
                 return {
-                    "Numéro": magasin.id,
+                    "Référence": magasin.id,
                     "nom": magasin.nom,
                     "adresse": magasin.adresse
                 }
@@ -33,7 +33,7 @@ function TableMagasin() : any {
     }
 
     return (
-      rows.length > 0 ?  <Table rows={rows} columns={columns} titleId="Numéro"/> : <div className="text-center">Aucun magasin</div>
+      rows.length > 0 ?  <Table rows={rows} columns={columns} titleId="Référence"/> : <div className="text-center">Aucun magasin</div>
     )
 }
 

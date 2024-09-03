@@ -20,7 +20,7 @@ function TableProduit() : any {
             const produits = data.map((value) => {
                 const produit = value.toJson();
                 return {
-                    "Numéro": produit.id,
+                    "Référence": produit.id,
                     "nom": produit.nom,
                     "prix (XAF)": produit.prix
                 }
@@ -33,7 +33,7 @@ function TableProduit() : any {
     }
 
     return (
-      rows.length > 0 ?  <Table rows={rows} columns={columns} titleId="Numéro"/> : <div className="text-center">Aucun magasin</div>
+      rows.length > 0 ?  <Table rows={rows} columns={columns} titleId="Référence"/> : <div className="text-center">Aucun magasin</div>
     )
 }
 
