@@ -10,6 +10,7 @@ import ProduitController from "../../../controllers/ProduitController";
 import NotFoundException from "../../../utils/exceptions/NotFoundException";
 import { NotificationContext } from "../../../contexts/Notification";
 import { UpdatingContext } from "../../../contexts/Updating";
+import { useTranslation } from "react-i18next";
 
 
 interface Errors {
@@ -30,19 +31,19 @@ interface Form {
     stock: number
 }
 
-const date = new Date().toLocaleString("fr-FR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    hour12: false,
-    minute: "numeric",
-    second: "numeric"
-});
-
 function ModalInventory(): any {
     const notificationContext = useContext(NotificationContext);
     const { data } = useContext(UpdatingContext);
+    const { t } = useTranslation();
+    const date = new Date().toLocaleString(t("locales"), {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        hour12: false,
+        minute: "numeric",
+        second: "numeric"
+    });
     const [form, setForm] = useState<Form>({ date: date, magasin: { value: "", options: [] }, produit: { value: "", options: [] }, stock: 0 });
     const [errors, setErrors] = useState<Errors>({});
     const [inventory, setInventory] = useState(new InventaireImpl(3, date, "", {}))
@@ -72,7 +73,7 @@ function ModalInventory(): any {
         if (form.produit.value === "") {
             errors.produitError = "Veuillez selectionner un produit";
         }
-        if (form.stock < 0) {
+        if (form.stock < 0 || form.stock === undefined) {
             errors.stockError = "Le stock doit être positif";
         }
         return errors;
@@ -135,12 +136,11 @@ function ModalInventory(): any {
                 setInventory(inventory);
                 const response = await api.updateInventory(data.row.id, inventory);
                 if (response.status === 200) {
-                    console.log("update", response.data);
                     setLoading(false);
                     hide();
-                    notificationContext.setData({ show: true, message: response.message, isSuccess: true });
+                    notificationContext.setData({ show: true, message: t("inventory.success.creating"), isSuccess: true });
                     setTimeout(() => {
-                        notificationContext.setData({ show: false, message: response.message, isSuccess: true });
+                        notificationContext.setData({ show: false, message: t("inventory.success.creating"), isSuccess: true });
                     }, 3000)
                 }
             } catch (error) {
@@ -172,9 +172,9 @@ function ModalInventory(): any {
                 if (response.status === 201) {
                     setLoading(false);
                     hide();
-                    notificationContext.setData({ show: true, message: response.message, isSuccess: true });
+                    notificationContext.setData({ show: true, message: t("inventory.success.creating"), isSuccess: true });
                     setTimeout(() => {
-                        notificationContext.setData({ show: false, message: response.message, isSuccess: true });
+                        notificationContext.setData({ show: false, message: t("inventory.success.creating"), isSuccess: true });
                     }, 3000)
                 }
             } catch (error) {
@@ -201,11 +201,11 @@ function ModalInventory(): any {
     return (
         <div>
             <div className="mb-4 text-light text-center">
-                <h3><strong>Table des inventaires</strong></h3>
+                <h3><strong>{t("inventory.title")}</strong></h3>
             </div>
             <Modal show={showModal} size="lg" backdrop="static" onHide={hide} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{data.action !== "update" ? "Création d'un inventaire" : "Modification d'un inventaire"}</Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">{data.action !== "update" ? t("inventory.creating") : t("inventory.editing")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <form>
@@ -215,29 +215,29 @@ function ModalInventory(): any {
                             </div>
                             <div className="col-6">
                                 <select className="form form-select" required value={form.magasin.value} onChange={changeMagasin} aria-label="Magasin">
-                                    <option selected disabled value="">Selectioner un magasin</option>
+                                    <option selected disabled value="">{t("store.select")}</option>
                                     {form.magasin.options.length != 0 && magasins}
                                 </select>
-                                {errors.magasinError && <div className="text-danger">{errors.magasinError}</div>}
+                                {errors.magasinError && <div className="text-danger">{t("store.error")}</div>}
                             </div>
                             <div className="col-6">
                                 <select className="form form-select" required value={form.produit.value} onChange={changeProduit} aria-label="Produit">
-                                    <option selected disabled value="">Selectioner un produit</option>
+                                    <option selected disabled value="">{t("product.select")}</option>
                                     {form.produit.options.length != 0 && produits}
                                 </select>
-                                {errors.produitError && <div className="text-danger">{errors.produitError}</div>}
+                                {errors.produitError && <div className="text-danger">{t("product.error")}</div>}
                             </div>
                             <div className="col-6">
                                 <input type="number" required placeholder="Stock" value={form.stock} onChange={changeStock} className="form form-control" aria-label="Stock" />
-                                {errors.stockError && <div className="text-danger">{errors.stockError}</div>}
+                                {errors.stockError && <div className="text-danger">{t("inventory.stock")}</div>}
                             </div>
                         </div>
                         <div className="col-12 mt-4 text-center">
                             <button className="btn btn-outline-danger" type="button" onClick={hide} style={{ width: 130 }}>{
-                                 "Annuler"
+                                 t("cancel")
                             }</button>
                             <button className="btn btn-success ms-2" type="submit" onClick={data.action === "update" ? updateInventaire : storeInventaire} style={{ width: 130 }}>{
-                                loading ? <Loader color="light" /> : "Enrégistrer"
+                                loading ? <Loader color="light" /> : t("save")
                             }</button>
                         </div>
                     </form>

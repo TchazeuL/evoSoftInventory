@@ -13,12 +13,12 @@ class InventaireController {
     public saveInventory(inventaire: InventaireImpl): Promise<Response<InventaireImpl>> {
         return Promise((resolve, reject) => {
             try {
-                this.inventaireService.save(inventaire);
-                resolve(new Response(inventaire, 201, "Créé avec succès"));
+                const result = this.inventaireService.save(inventaire);
+                resolve(new Response(result, 201, "Inventaire créé avec succès"));
             } catch (error) {
                 if (error instanceof Error) {
                     console.log(error.message);
-                    reject(new Response(null, 500, "Erreur lors de la soumission"));
+                    reject(new Response(null, 500, error.message));
                 }
             }
         });
@@ -39,7 +39,7 @@ class InventaireController {
         return Promise((resolve, reject) => {
             try {
                 let inventaires = this.inventaireService.findAll()
-                resolve(new Response(inventaires, 200, "Modifié avec succès"));
+                resolve(new Response(inventaires, 200, "Succès"));
             } catch (error) {
                 reject(new Response(null, 500, "Erreur lors de la recuperation"));
             }
@@ -49,9 +49,9 @@ class InventaireController {
     public getInventoryById(id: number): Promise<Response<Array<InventaireImpl>>> {
         return Promise((resolve, reject) => {
             let inventaire = this.inventaireService.findById(id);
-            resolve(new Response(inventaire, 200, "Modifié avec succès"));
+            resolve(new Response(inventaire, 200, "Succès"));
             if (inventaire === null) {
-                const error = new NotFoundException("Non trouvé");
+                const error = new NotFoundException("Inventaire non trouvé");
                 reject(new Response(null, error.status, error.message));
             }
         });

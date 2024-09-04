@@ -2,7 +2,7 @@ import InventaireImpl from "../models/Inventaire";
 
 interface InventaireRepository {
 
-    save(inventaire: InventaireImpl): void;
+    save(inventaire: InventaireImpl): InventaireImpl | null;
 
     findAll() : Array<InventaireImpl> ; 
 

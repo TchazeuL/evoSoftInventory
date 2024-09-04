@@ -7,7 +7,7 @@ class ProduitService implements ProduitRepository {
     public constructor(){}
 
     public findById(id: string): ProduitImpl | null {
-        let produit = new ProduitImpl("", "", 0);
+        let produit = new ProduitImpl("", "", 0, []);
         const list = produits;
         let index = list.map((item) => item.id).indexOf(id);
         if (index !== -1){
@@ -17,12 +17,12 @@ class ProduitService implements ProduitRepository {
     }
 
     public findAll(): Array<ProduitImpl> {
-        let products = produits.map((item) => new ProduitImpl("", "", 0).fromJson(item));
+        let products = produits.map((item) => new ProduitImpl("", "", 0, []).fromJson(item));
         return products;
     }
 
     public findByName(nom: string): ProduitImpl | null {
-        let produit = new ProduitImpl("", "", 0);
+        let produit = new ProduitImpl("", "", 0, []);
         const list = produits;
         let index = list.map((item) => item.nom).indexOf(nom);
         if (index !== -1){

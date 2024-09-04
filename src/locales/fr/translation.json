@@ -1,0 +1,49 @@
+{
+    "select_navbar": "Langue",
+    "language": "Français",
+    "export": "Exporter en csv",
+    "create": "Ajouter",
+    "edit": "modifier",
+    "refresh": "Actualiser",
+    "search": "Rechercher...",
+    "save": "Enrégistrer",
+    "cancel": "Annuler",
+    "locales": "fr-FR",
+    "error": "Page introuvable",
+    "produit": "produit",
+    "magasin": "magasin",
+    "stock": "stock",
+    "modifier": "modifier",
+    "filename": "inventaire",
+    "inventory": {
+        "title": "Table des inventaires",
+        "nav": "Inventaires",
+        "error": "Le stock doit être positif ou nul",
+        "creating": "Création d'un inventaire",
+        "editing": "Modification d'un inventaire",
+        "file": "Inventaire journalier",
+        "success": {
+            "editing": "Modification réussi",
+            "creating": "Inventaire créé avec succès",
+            "fetch": "Récupérer avec succès"
+        }
+    },
+    "store": {
+        "id": "référence",
+        "name": "nom",
+        "adress": "adresse",
+        "title": "Table des magasins",
+        "select": "Selectionnez un magasin",
+        "error": "Veuillez selectionner un magasin",
+        "nav": "Magasins"
+    },
+    "product": {
+        "id": "référence",
+        "name": "nom",
+        "price": "prix (XAF)",
+        "title": "Table des produits",
+        "select": "Selectionnez un produit",
+        "error": "Veuillez selectionner un produit",
+        "nav": "Produits"
+    }
+}

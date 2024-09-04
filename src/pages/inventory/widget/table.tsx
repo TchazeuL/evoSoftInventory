@@ -8,6 +8,7 @@ import NotFoundException from "../../../utils/exceptions/NotFoundException";
 import { NotificationContext } from "../../../contexts/Notification";
 import Loader from "../../../components/Loader";
 import { UpdatingContext } from "../../../contexts/Updating";
+import { useTranslation } from "react-i18next";
 import CsvDownload from "react-csv-downloader";
 
 
@@ -15,16 +16,25 @@ function TableInventory() {
 
     const [rows, setRows] = useState<any[]>([]);
     const [columns, setColumns] = useState<string[]>([]);
+    const [enRows, setEnRows] = useState<any[]>([]);
     const [filter, setFilter] = useState("");
     const titleId = "N°";
     const [loading, setLoading] = useState(false);
     const notificationContext = useContext(NotificationContext);
+    const { t, i18n } = useTranslation();
     const { setData } = useContext(UpdatingContext);
     const api = new InventaireController();
 
     useEffect(() => {
-        getInventories();
+        getInventories(true);
     }, [])
+
+    useEffect(() => {
+        const onLangChange = (): void => {
+            getInventories(false);
+        }
+        i18n.on("languageChanged", onLangChange);
+    }, [i18n])
 
     const create = (): void => {
         const data = {
@@ -35,7 +45,7 @@ function TableInventory() {
         setData(data);
     }
 
-    const getInventories = async (): Promise<void> => {
+    const getInventories = async (notify: boolean): Promise<void> => {
         setLoading(true)
         const produitApi = new ProduitController();
         const magasinApi = new MagasinController();
@@ -58,40 +68,51 @@ function TableInventory() {
                     "stock": stock,
                     "modifier": "modifier"
                 }
+                const enResult = {
+                    "N°": item.id,
+                    "date": date,
+                    "store": magasin.data.nom,
+                    "product": produit.data.nom,
+                    "stock": stock,
+                    "update": "update"
+                }
                 result[titleId] = item.id;
-                return result;
+                return { "fr": result, "en": enResult };
             }));
-            setColumns([titleId, "date", "magasin", "produit", "stock", "modifier"]);
-            setRows(items);
-            setLoading(false);
             if (items.length > 0) {
-                notificationContext.setData({ show: true, message: response.message, isSuccess: true });
+                const keys = Object.keys(items[0].fr);
+                setColumns(keys.map((key) => t(key)))
+                setRows(items.map((value) => value.fr));
+                setEnRows(items.map((value) => value.en));
+                setLoading(false);
+                notificationContext.setData({ show: notify, message: t("inventory.success.fetch"), isSuccess: true });
                 setTimeout(() => {
-                    notificationContext.setData({ show: false, message: response.message, isSuccess: true });
+                    notificationContext.setData({ show: false, message: t("inventory.success.fetch"), isSuccess: true });
                 }, 3000)
+
             }
         } catch (error) {
-            notificationContext.setData({ show: true, message: error instanceof NotFoundException ? error.message : `${error}`, isSucces: false });
+            notificationContext.setData({ show: notify, message: error instanceof NotFoundException ? error.message : `${error}`, isSucces: false });
             setTimeout(() => {
                 notificationContext.setData({ show: false, message: error instanceof NotFoundException ? error.message : `${error}`, isSucces: false });
             }, 3000)
         }
     }
 
-    const instant = new Date().toLocaleString("fr-FR", {
+    const instant = new Date().toLocaleString(t("locales"), {
         year: "numeric",
         month: "short",
         day: "numeric",
     });
 
     const filteredRows = rows.map((item) => {
-        if (`${item["produit"]}`.toLowerCase().includes(`${filter}`.toLowerCase()) || `${item["magasin"]}`.toLowerCase().includes(`${filter}`.toLowerCase())){
+        if (`${item["produit"]}`.toLowerCase().includes(`${filter}`.toLowerCase()) || `${item["magasin"]}`.toLowerCase().includes(`${filter}`.toLowerCase())) {
             return item;
         }
         return [];
     })
 
-    const onfilter = (event: React.ChangeEvent<HTMLInputElement>) : void => {
+    const onfilter = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setFilter(event.target.value);
     }
 
@@ -100,17 +121,17 @@ function TableInventory() {
             <div>
                 <div className="d-flex mb-3 col-12">
                     <div className="col-6">
-                        <button className="btn btn-primary col-4" onClick={create}>Ajouter</button>
-                        <button className="btn btn-light ms-2 col-4" onClick={() => window.location.reload()}>Actualiser</button>
+                        <button className="btn btn-primary col-4" onClick={create}>{t("create")}</button>
+                        <button className="btn btn-light ms-2 col-4" onClick={() => window.location.reload()}>{t("refresh")}</button>
                     </div>
                     <div className="col-6">
-                        <form className="row">
+                        <form className="row g-5">
                             <div className="col-8">
-                                <input type="search" placeholder="Rechercher" className="form form-control" onKeyDown={(e) => {if (e.key === "Enter") {e.preventDefault()};}} onChange={onfilter} />
+                                <input type="search" placeholder={t("search")} className="form form-control" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault() }; }} onChange={onfilter} />
                             </div>
                             <div className="col-4">
-                                <CsvDownload datas={rows} columns={columns} filename="inventaire" title={`Inventaire journalier ( ${instant} )`}>
-                                    <button className="btn btn-primary" >Exporter en csv</button>
+                                <CsvDownload datas={i18n.language === "fr" ? rows : enRows} columns={columns.slice(0, -1)} filename={t("filename")} title={` ${t("inventory.file")} ( ${instant} )`}>
+                                    <button className="btn btn-primary" type="button" >{t("export")}</button>
                                 </CsvDownload>
                             </div>
                         </form>

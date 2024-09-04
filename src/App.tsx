@@ -6,9 +6,12 @@ import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-route
 import MagasinPage from './pages/magasins/MagasinPage';
 import ProduitPage from './pages/produits/ProduitPage';
 import ErrorPage from './pages/error/ErrorPage';
+import { useTranslation } from 'react-i18next';
 
 
 function App() {
+
+  const { t } = useTranslation();
 
   return (
     <div className="App">
@@ -19,8 +22,8 @@ function App() {
           }>
             <Route path="inventaire" index element={<InventoryPage />}></Route>
             <Route path="" element={<InventoryPage />}></Route>
-            <Route path="magasins" element={<MagasinPage title="Table des magasins" />}></Route>
-            <Route path="produits" element={<ProduitPage title="Table des produits" />}></Route>
+            <Route path="magasins" element={<MagasinPage title={t("store.title")} />}></Route>
+            <Route path="produits" element={<ProduitPage title={t("product.title")} />}></Route>
             <Route path="/*" element={<ErrorPage />}></Route>
           </Route>
         </Routes>

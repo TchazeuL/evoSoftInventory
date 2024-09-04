@@ -1,14 +1,16 @@
-class Response {
+class Response<T> {
 
-    private readonly data: any;
-    private readonly status: number;
-    private readonly message: string;
+    public readonly data: any;
+    public readonly status: number;
+    public readonly message: string;
 
-    public constructor(data: any, status: number, message: string) {
+    public constructor(data: T, status: number, message: string) {
         this.data = data;
         this.status = status;
         this.message = message;
     }
+
+
 
     public toJson(): any {
         return {

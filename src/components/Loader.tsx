@@ -1,8 +1,8 @@
 import { Spinner } from "react-bootstrap";
 
-function Loader(): any {
+function Loader({color} : {color: string}): any {
     return (
-        <Spinner animation="border" size="sm" variant="light"></Spinner>
+        <Spinner animation="border" size="sm" variant={color}></Spinner>
     );
 }
 

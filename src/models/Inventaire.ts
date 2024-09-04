@@ -14,9 +14,9 @@ class InventaireImpl implements Inventaire {
 
     private _produitId: string;
 
-    private _stock: Record<string, any>;
+    private _stock: Record<string, number>;
 
-    public constructor(id: number, date: string, produitId: string, stock: Record<string, any>) {
+    public constructor(id: number, date: string, produitId: string, stock: Record<string, number>) {
         this._id = id;
         this._date = date;
         this._produitId = produitId;
@@ -58,6 +58,7 @@ class InventaireImpl implements Inventaire {
 
     public toJson(): any {
         return {
+            "id": this.id,
             "date": this.date,
             "produitId": this.produitId,
             "stock": this.stock
