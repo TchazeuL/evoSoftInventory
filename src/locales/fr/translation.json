@@ -22,6 +22,7 @@
         "creating": "Création d'un inventaire",
         "editing": "Modification d'un inventaire",
         "file": "Inventaire journalier",
+        "empty": "Aucun inventaire pour le moment",
         "success": {
             "editing": "Modification réussi",
             "creating": "Inventaire créé avec succès",

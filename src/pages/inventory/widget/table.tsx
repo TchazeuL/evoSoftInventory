@@ -140,7 +140,7 @@ function TableInventory() {
                     </form>
                 </div>}
             </div>
-            {loading ? <div className="offset-6 mt-5">  <Loader color="success" />  </div> : isEmpty ? <div className="text-center text-light" style={{marginTop: 150}}> <h3> <strong>Aucun inventaire pour le moment</strong> </h3> </div> :
+            {loading ? <div className="offset-6 mt-5">  <Loader color="success" />  </div> : isEmpty ? <div className="text-center text-light" style={{marginTop: 150}}> <h3> <strong>{t("inventory.empty")}</strong> </h3> </div> :
                 <Table rows={filteredRows} columns={columns} titleId={titleId} />}
         </div>
     )
