@@ -21,6 +21,7 @@ interface Errors {
 
 interface Select {
     value: string,
+    enabled?: boolean
     options: Array<string>
 }
 
@@ -35,16 +36,12 @@ function ModalInventory(): any {
     const notificationContext = useContext(NotificationContext);
     const { data } = useContext(UpdatingContext);
     const { t } = useTranslation();
-    const date = new Date().toLocaleString(t("locales"), {
+    const date = new Date().toLocaleString("fr-FR", {
         year: "numeric",
         month: "short",
         day: "numeric",
-        hour: "numeric",
-        hour12: false,
-        minute: "numeric",
-        second: "numeric"
     });
-    const [form, setForm] = useState<Form>({ date: date, magasin: { value: "", options: [] }, produit: { value: "", options: [] }, stock: 0 });
+    const [form, setForm] = useState<Form>({ date: date, magasin: { value: "", options: [], enabled: false }, produit: { value: "", options: [] }, stock: 0 });
     const [errors, setErrors] = useState<Errors>({});
     const [inventory, setInventory] = useState(new InventaireImpl(3, date, "", {}))
     const [loading, setLoading] = useState(false);
@@ -57,10 +54,10 @@ function ModalInventory(): any {
         if (data.showModal) {
             show()
             setForm((value) => ({
-                ...value, date: date, magasin: { value: data.row.magasin, options: value.magasin.options }, produit: { value: data.row.produit, options: value.produit.options }, stock: data.row.stock
+                ...value, date: date, magasin: { value: data.row.magasin, options: value.magasin.options }, produit: { value: data.row.produit, enabled: false, options: value.produit.options }, stock: data.row.stock
             }))
-        } 
-        if (data.action === "create"){
+        }
+        if (data.action === "create") {
             show();
         }
     }, [data])
@@ -73,7 +70,7 @@ function ModalInventory(): any {
         if (form.produit.value === "") {
             errors.produitError = "Veuillez selectionner un produit";
         }
-        if (form.stock < 0 || form.stock === undefined) {
+        if (form.stock < 0 || form.stock === undefined || form.stock === null || typeof form.stock !== "number") {
             errors.stockError = "Le stock doit être positif";
         }
         return errors;
@@ -91,16 +88,23 @@ function ModalInventory(): any {
     }
 
 
-    const changeMagasin = (event: React.ChangeEvent<any>): void => {
-        setForm({ ...form, magasin: { value: event.target.value, options: form.magasin.options } });
+    const changeMagasin = async (event: React.ChangeEvent<HTMLSelectElement>): Promise<void> => {
+        const value = event.target.value;
+        setForm({ ...form, magasin: { value: value, options: form.magasin.options } });
+        produitApi.getAllProductsByMagasins(event.target.value).then((response) => {
+            if (response.status === 200) {
+                const produits = response.data as Array<ProduitImpl>;
+                setForm({ ...form, produit: { value: form.produit.value, enabled: true, options: produits.map((value) => value.nom) }, magasin: { value: value, options: form.magasin.options } });
+            }
+        }).catch((error) => console.log(error));
     }
 
     const changeProduit = (event: React.ChangeEvent<any>): void => {
-        setForm({ ...form, produit: { value: event.target.value, options: form.produit.options } });
+        setForm({ ...form, produit: { value: event.target.value, options: form.produit.options, enabled: true } });
     }
 
-    const changeStock = (event: React.ChangeEvent<any>): void => {
-        setForm({ ...form, stock: event.target.value });
+    const changeStock = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setForm({ ...form, stock: parseInt(event.target.value) });
     }
 
     const getProducts = async (): Promise<void> => {
@@ -138,9 +142,9 @@ function ModalInventory(): any {
                 if (response.status === 200) {
                     setLoading(false);
                     hide();
-                    notificationContext.setData({ show: true, message: t("inventory.success.creating"), isSuccess: true });
+                    notificationContext.setData({ show: true, message: t("inventory.success.editing"), isSuccess: true });
                     setTimeout(() => {
-                        notificationContext.setData({ show: false, message: t("inventory.success.creating"), isSuccess: true });
+                        notificationContext.setData({ show: false, message: t("inventory.success.editing"), isSuccess: true });
                     }, 3000)
                 }
             } catch (error) {
@@ -161,31 +165,40 @@ function ModalInventory(): any {
         let validation = validator();
         setErrors(validation);
         if (Object.keys(validation).length === 0) {
-            let inventory = new InventaireImpl(0, date, "", {})
-            try {
-                const produitResponse = await produitApi.getProductByName(form.produit.value);
-                const magasinResponse = await magasinApi.getMagasinByName(form.magasin.value);
-                inventory.produitId = produitResponse.data.id;
-                inventory.stock[magasinResponse.data.id] = form.stock;
-                setInventory(inventory);
-                const response = await api.saveInventory(inventory);
-                if (response.status === 201) {
+            api.checkIfExist(form.magasin.value, form.produit.value).then(async (response) => {
+                console.log(response);
+                let inventory = new InventaireImpl(0, date, "", {})
+                try {
+                    const produitResponse = await produitApi.getProductByName(form.produit.value);
+                    const magasinResponse = await magasinApi.getMagasinByName(form.magasin.value);
+                    inventory.produitId = produitResponse.data.id;
+                    inventory.stock[magasinResponse.data.id] = form.stock;
+                    setInventory(inventory);
+                    const response = await api.saveInventory(inventory);
+                    if (response.status === 201) {
+                        setLoading(false);
+                        hide();
+                        notificationContext.setData({ show: true, message: t("inventory.success.creating"), position: "top-center" ,isSuccess: true });
+                        setTimeout(() => {
+                            notificationContext.setData({ show: false, message: t("inventory.success.creating"), position: "top-center", isSuccess: true });
+                        }, 3000)
+                    }
+                } catch (error) {
                     setLoading(false);
-                    hide();
-                    notificationContext.setData({ show: true, message: t("inventory.success.creating"), isSuccess: true });
+                    notificationContext.setData({ show: true, message: error instanceof NotFoundException ? error.message : `${error}`, position: "top-center", isSucces: false });
                     setTimeout(() => {
-                        notificationContext.setData({ show: false, message: t("inventory.success.creating"), isSuccess: true });
+                        notificationContext.setData({ show: false, message: error instanceof NotFoundException ? error.message : `${error}`, position: "top-center", isSucces: false });
                     }, 3000)
+                    hide();
                 }
-            } catch (error) {
-                console.log(error);
-                setLoading(false);
-                notificationContext.setData({ show: true, message: error instanceof NotFoundException ? error.message : `${error}`, isSucces: false });
+
+            }).catch((error) => {
+                notificationContext.setData({ show: true, message: error.message, position: "top-center", isSucces: false });
                 setTimeout(() => {
-                    notificationContext.setData({ show: false, message: error instanceof NotFoundException ? error.message : `${error}`, isSucces: false });
+                    notificationContext.setData({ show: false, message: error.message, position: "top-center", isSucces: false });
                 }, 3000)
-                hide();
             }
+            )
         }
         setLoading(false);
     }
@@ -201,7 +214,7 @@ function ModalInventory(): any {
     return (
         <div>
             <div className="mb-4 text-light text-center">
-                <h3><strong>{t("inventory.title")}</strong></h3>
+                <h3><strong>{t("inventory.title").toUpperCase()}</strong></h3>
             </div>
             <Modal show={showModal} size="lg" backdrop="static" onHide={hide} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
@@ -221,7 +234,7 @@ function ModalInventory(): any {
                                 {errors.magasinError && <div className="text-danger">{t("store.error")}</div>}
                             </div>
                             <div className="col-6">
-                                <select className="form form-select" required value={form.produit.value} onChange={changeProduit} aria-label="Produit">
+                                <select className="form form-select" disabled={data.action === "update" ? false : !form.produit.enabled} required value={form.produit.value} onChange={changeProduit} aria-label="Produit">
                                     <option selected disabled value="">{t("product.select")}</option>
                                     {form.produit.options.length != 0 && produits}
                                 </select>
@@ -229,15 +242,15 @@ function ModalInventory(): any {
                             </div>
                             <div className="col-6">
                                 <input type="number" required placeholder="Stock" value={form.stock} onChange={changeStock} className="form form-control" aria-label="Stock" />
-                                {errors.stockError && <div className="text-danger">{t("inventory.stock")}</div>}
+                                {errors.stockError && <div className="text-danger">{t("inventory.error")}</div>}
                             </div>
                         </div>
                         <div className="col-12 mt-4 text-center">
                             <button className="btn btn-outline-danger" type="button" onClick={hide} style={{ width: 130 }}>{
-                                 t("cancel")
+                                t("cancel")
                             }</button>
                             <button className="btn btn-success ms-2" type="submit" onClick={data.action === "update" ? updateInventaire : storeInventaire} style={{ width: 130 }}>{
-                                loading ? <Loader color="light" /> : t("save")
+                                loading ? <Loader color="light" size={300}/> : t("save")
                             }</button>
                         </div>
                     </form>

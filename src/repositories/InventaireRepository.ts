@@ -10,6 +10,8 @@ interface InventaireRepository {
 
     update(id: number, inventaire: InventaireImpl) : InventaireImpl | null;
 
+    checkIfExist(magasin: string, produit: string) : boolean
+
 }
 
 export default InventaireRepository;

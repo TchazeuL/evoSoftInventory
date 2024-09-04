@@ -1,9 +1,15 @@
 import InventaireImpl from "../models/Inventaire";
 import InventaireRepository from "../repositories/InventaireRepository";
+import MagasinService from "./MagasinService";
+import ProduitService from "./ProduitService";
 
 class InventaireService implements InventaireRepository {
 
     private inventaire: InventaireImpl = new InventaireImpl(0, "", "", {});
+
+    private magasinService = new MagasinService();
+
+    private produitService = new ProduitService();
 
     public constructor() { }
 
@@ -71,6 +77,24 @@ class InventaireService implements InventaireRepository {
             return item;
         }
         return null
+    }
+
+    public checkIfExist(magasin: string, produit: string): boolean {
+        const list = localStorage.getItem("inventaires");
+        const date = new Date().toLocaleString("fr-FR", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+        if (list !== null) {
+            const data = JSON.parse(list) as Record<string, any>;
+            const inventaires = data["content"] as Array<any>;
+            const magasinModel = this.magasinService.findByName(magasin);
+            const produiModel = this.produitService.findByName(produit);
+            const inventaire = inventaires.find((item) => item.produitId === produiModel?.id && Object.keys(item.stock)[0] === magasinModel?.id);
+            return inventaire != null && inventaire.date == date
+        }
+        return false;
     }
 }
 

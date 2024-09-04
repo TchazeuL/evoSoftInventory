@@ -1,8 +1,11 @@
-import { produits } from "../data/datas";
+import { produits, produit_magasin } from "../data/datas";
 import ProduitImpl from "../models/Produit";
 import ProduitRepository from "../repositories/ProduitRepository";
+import MagasinService from "./MagasinService";
 
 class ProduitService implements ProduitRepository {
+
+    private magasinService = new MagasinService();
 
     public constructor(){}
 
@@ -29,6 +32,13 @@ class ProduitService implements ProduitRepository {
             return produit.fromJson(list.find((item) => item.nom === nom));
         }
         return null;
+    }
+
+    public findByMagasin(magasin: string): Array<ProduitImpl | null> {
+        const magasinModel = this.magasinService.findByName(magasin); 
+        const produitIds = produit_magasin.filter((item) => item.magasinId === magasinModel?.id).map((value) => value.produitId);
+        const produits = produitIds.map((value) => this.findById(value));
+        return produits;
     }
 
 }

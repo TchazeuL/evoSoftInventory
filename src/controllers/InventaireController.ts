@@ -57,6 +57,17 @@ class InventaireController {
         });
     }
 
+    public checkIfExist(magasin: string, produit: string) : Promise<Response<boolean>>{
+        return Promise((resolve, reject) => {
+            const isExist = this.inventaireService.checkIfExist(magasin, produit);
+            if (isExist === true){
+                reject(new Response(isExist, 409, "Cet inventaire existe déjà pour ce jour"));
+            } else {
+                resolve(new Response(isExist, 200, "Ok"));
+            }
+        });
+    }
+
 }
 
 export default InventaireController;

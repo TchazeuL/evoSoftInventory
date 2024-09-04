@@ -54,7 +54,7 @@ const magasins = [
     },
 ];
 
-// Si on suppose qu'il existe une relation many to manay entre produit et magasin
+// Si on suppose qu'il existe une relation many to many entre produit et magasin
 
 const produit_magasin = [
     {

@@ -25,7 +25,7 @@
         "success": {
             "editing": "Modification réussi",
             "creating": "Inventaire créé avec succès",
-            "fetch": "Récupérer avec succès"
+            "fetch": "Récupérés avec succès"
         }
     },
     "store": {

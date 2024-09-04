@@ -5,7 +5,7 @@ interface NotificationContextType {
     setData: any,
 }
 
-const initialData = { show: false, message: "", isSuccess: false };
+const initialData = { show: false, message: "", isSuccess: false , postion: "top-center"};
 
 const NotificationContext = createContext<NotificationContextType>({ data: initialData, setData: () => { } });
 

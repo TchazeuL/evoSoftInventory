@@ -43,6 +43,13 @@ class ProduitController {
         });
     }
 
+    public getAllProductsByMagasins(magasin: string) : Promise<Response<Array<ProduitImpl | null>>> {
+        return Promise((resolve, reject) => {
+            let produits = this.produitService.findByMagasin(magasin);
+            resolve(new Response(produits, 200, "Succès"));
+        })
+    }
+
 }
 
 export default ProduitController;

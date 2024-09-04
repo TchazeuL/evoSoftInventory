@@ -7,6 +7,8 @@ interface ProduitRepository {
     findAll() : Array<ProduitImpl>;
 
     findByName(nom: string) : ProduitImpl | null;
+
+    findByMagasin(idMagasin: string) : Array<ProduitImpl | null>
 }
 
 export default ProduitRepository;

@@ -1,7 +1,11 @@
 .inventory {
-    margin-top: 70px;
+    margin-top: 60px;
 }
 
 .title {
     margin-top: 50px;
+}
+
+div {
+    position: sticky;
 }

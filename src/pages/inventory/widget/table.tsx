@@ -85,18 +85,19 @@ function TableInventory() {
                 setRows(items.map((value) => value.fr));
                 setEnRows(items.map((value) => value.en));
                 setLoading(false);
-                notificationContext.setData({ show: notify, message: t("inventory.success.fetch"), isSuccess: true });
+                notificationContext.setData({ show: notify, message: t("inventory.success.fetch"), position: "top-center", isSuccess: true });
                 setTimeout(() => {
-                    notificationContext.setData({ show: false, message: t("inventory.success.fetch"), isSuccess: true });
+                    notificationContext.setData({ show: false, message: t("inventory.success.fetch"), position: "top-center", isSuccess: true });
                 }, 3000)
-
             }
         } catch (error) {
-            notificationContext.setData({ show: notify, message: error instanceof NotFoundException ? error.message : `${error}`, isSucces: false });
+            setLoading(false);
+            notificationContext.setData({ show: notify, message: error instanceof NotFoundException ? error.message : `${error}`, position: "top-center", isSucces: false });
             setTimeout(() => {
-                notificationContext.setData({ show: false, message: error instanceof NotFoundException ? error.message : `${error}`, isSucces: false });
+                notificationContext.setData({ show: false, message: error instanceof NotFoundException ? error.message : `${error}`, position: "top-center", isSucces: false });
             }, 3000)
         }
+        setLoading(false);
     }
 
     const instant = new Date().toLocaleString(t("locales"), {
@@ -116,29 +117,32 @@ function TableInventory() {
         setFilter(event.target.value);
     }
 
+    const isEmpty = filteredRows.length === 0;
+
     return (
-        loading ? <Loader color="success" /> :
-            <div>
-                <div className="d-flex mb-3 col-12">
-                    <div className="col-6">
-                        <button className="btn btn-primary col-4" onClick={create}>{t("create")}</button>
-                        <button className="btn btn-light ms-2 col-4" onClick={() => window.location.reload()}>{t("refresh")}</button>
-                    </div>
-                    <div className="col-6">
-                        <form className="row g-5">
-                            <div className="col-8">
-                                <input type="search" placeholder={t("search")} className="form form-control" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault() }; }} onChange={onfilter} />
-                            </div>
-                            <div className="col-4">
-                                <CsvDownload datas={i18n.language === "fr" ? rows : enRows} columns={columns.slice(0, -1)} filename={t("filename")} title={` ${t("inventory.file")} ( ${instant} )`}>
-                                    <button className="btn btn-primary" type="button" >{t("export")}</button>
-                                </CsvDownload>
-                            </div>
-                        </form>
-                    </div>
+
+        <div>
+            <div className="d-flex mb-3 col-12">
+                <div className="col-6">
+                    <button className="btn btn-primary col-3" onClick={create}>{t("create")}</button>
+                    <button className="btn btn-light ms-2 col-3" onClick={() => window.location.reload()}>{t("refresh")}</button>
                 </div>
-                <Table rows={filteredRows} columns={columns} titleId={titleId} />
+              { !isEmpty && <div className="col-6">
+                    <form className="d-flex col-12">
+                        <div className="offset-3 col-5">
+                            <input type="search" placeholder={t("search")} className="form form-control" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault() }; }} onChange={onfilter} />
+                        </div>
+                        <div className="col-4 ms-5">
+                            <CsvDownload datas={i18n.language === "fr" ? rows : enRows} columns={columns.slice(0, -1)} filename={t("filename")} title={` ${t("inventory.file")} ( ${instant} )`}>
+                                <button className="btn btn-primary" type="button" >{t("export")}</button>
+                            </CsvDownload>
+                        </div>
+                    </form>
+                </div>}
             </div>
+            {loading ? <div className="offset-6 mt-5">  <Loader color="success" />  </div> : isEmpty ? <div className="text-center text-light" style={{marginTop: 150}}> <h3> <strong>Aucun inventaire pour le moment</strong> </h3> </div> :
+                <Table rows={filteredRows} columns={columns} titleId={titleId} />}
+        </div>
     )
 }
 
