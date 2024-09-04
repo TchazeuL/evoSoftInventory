@@ -20,7 +20,7 @@ function Navbar({ title, textColor }: { title: string, textColor: string }): JSX
     ]
 
     const options = languages.map((item) => {
-        return <option value={item.short} selected={i18n.language === item.short} key={languages.indexOf(item)}>{item.name}</option>
+        return <option value={item.short} key={languages.indexOf(item)}>{item.name}</option>
     })
 
     const translate = (event: React.ChangeEvent<HTMLSelectElement>) : void => {
@@ -48,7 +48,7 @@ function Navbar({ title, textColor }: { title: string, textColor: string }): JSX
                             </li>
                         </ul>
                         <form className="row ms-auto col-2">
-                            <select className="form-select form-select bg-secondary border-dark text-white" onChange={translate}>
+                            <select defaultValue={i18n.language} className="form-select form-select bg-secondary border-dark text-white" onChange={translate}>
                                 <option disabled value="">{t("select_navbar")}</option>
                                 {options.length > 0 && options}
                             </select>

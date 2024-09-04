@@ -11,7 +11,14 @@ import { useTranslation } from 'react-i18next';
 
 function App() {
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const lng = localStorage.getItem("i18nextLng");
+    if (lng !== null){
+      i18n.changeLanguage(lng);
+    }
+  }, [])
 
   return (
     <div className="App">

@@ -8,7 +8,7 @@ function Table({ rows, columns, titleId }: { rows: Array<Record<string, any>>, c
 
     const { t } = useTranslation();
 
-    const cols = columns.map((column) => <th key={columns.indexOf(column)} scope="col">
+    const cols = columns.map((column) => <th key={column} scope="col">
         {column.replace(`${column.at(0)}`, `${column.at(0)}`.toUpperCase())}
     </th>);
 
