@@ -15,10 +15,11 @@ function App() {
 
   useEffect(() => {
     const lng = localStorage.getItem("i18nextLng");
+    console.log(lng);
     if (lng !== null){
       i18n.changeLanguage(lng);
     }
-  }, [])
+  }, [i18n])
 
   return (
     <div className="App">
